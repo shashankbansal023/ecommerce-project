@@ -559,46 +559,57 @@ const productsRef = document.querySelector(".products");
 
 function render(allProducts){
     let products = "";
-    let cartItems = JSON.parse(localStorage.getItem('cart'));
+    // let cartItems = JSON.parse(localStorage.getItem('cart'));
     
     if(!allProducts.length){
         allProducts = [...PRODUCTS];
     }
 
     allProducts.forEach(item=>{
+        
         const {image,category,price,brand,id} = item;
         const {discountedPrice} = price;
+        
         products+=(`
-        <div class='single-product' id=${id}>  
-            
-            <div class="product-img">
-                <img src=${image}>
+        <div class='single-product row col-md-3 card p-0 m-3'  id=${id}>  
+            <img class="card-img-top p-0"  src=${image} >
+            <div class="card-body col-md-12">
+                <div>
+                    <p class="brand-name">${brand}</p>
+                    <p class="category">${category}</h1>
+                </div>
+                <div class="price-details">
+                    <span>Rs.${discountedPrice}</span>
+                    <span class="mrp-price">Rs.${price.mrp}</span>
+                    <span>${price.discount}</span>
+                </div>
+           
+                <div class = "row p-2 d-flex justify-content-center" >
+                    <button class="col-md-8 btn btn-primary shopping-button cursor-pointer" onclick="addToCart(${id})" id="shopping-${id}">
+                        Add to <i class="fas fa-cart-arrow-down"></i>
+                    </button>  
+                </div>
+
+                <div class="quantity-counter-box justify-content-center" id="quantity-counter-box-${id}">
+                    <div class="input-group quantity-counter mb-3 row d-flex" style="width:60%">
+                            <button onclick="decrementQuantity(${id})" class="col btn btn-secondary" type="button" id="button-addon1-${id}">-</button>
+                                <input  id="quantity-count-${id}" type="number"  class="col" value="1" placeholder="">
+                            <button onclick="incrementQuantity(${id})" class="col btn btn-info" type="button" id="button-addon2-${id}">+</button>
+                    </div>
+                    </div>  
             </div>
-            <div>
-                <p class="brand-name">${brand}</p>
-                <p class="category">${category}</h1>
-            </div>
-            <div class="price-details">
-                <span>Rs.${discountedPrice}</span>
-                <span class="mrp-price">Rs.${price.mrp}</span>
-                <span>${price.discount}</span>
-            </div>
-            <div class="quantity-box" id="quantity-${id}">
-                <label for="quantity">Quantity </label>
-                <input type="number" id="quantity" value="1" name="quantity" min="1" max="10">
-            </div>
-            <button class="shopping-button" id="shopping-${id}">
-            Add to <i class="fas fa-cart-arrow-down"></i>
-        </button> 
         </div>
         `)
     })
 
-    if(cartItems.length!==0){
-        document.querySelector('.cart-counter').innerHTML = cartItems.length;
-    }
+    // if(cartItems.length!==0){
+        // document.querySelector('.cart-counter').innerHTML = cartItems.length;
+    // }
     productsRef.innerHTML = products; 
 }
+
+localStorage.clear();
+
 
 function renderFilteredProducts(filterCategories){
 
@@ -670,9 +681,9 @@ function renderBasedOnSearch(){
 
 }
 
-const searchDebounce = debouncedSearch(searchProducts,300);
+const searchDebounce = debounce(searchProducts,300);
 
-function debouncedSearch(fn,delay){
+function debounce(fn,delay){
     let timeout = 0;
     return function(...args){
         if(timeout){
@@ -700,61 +711,72 @@ priceFiltering();
 renderBasedOnSearch();
 
 
+
+function incrementQuantity(id){
+
+    let quantityCount = document.getElementById(`quantity-count-${id}`); 
+
+    if(quantityCount.value < 10){
+        quantityCount.value++;
+    }
+
+    let cart = JSON.parse(localStorage.getItem('cart'));
+    let newCart = cart.map(item=> {
+        if(item.id== id){
+            item["quantity"] = quantityCount.value;
+        }
+        return item;
+    })
+    localStorage.setItem('cart',JSON.stringify(newCart));
+
+}
+
+function decrementQuantity(id){
+
+    let quantityCount = document.getElementById(`quantity-count-${id}`);
+ 
+    if(quantityCount.value > 1){
+        quantityCount.value--;
+    }
+
+    let cart = JSON.parse(localStorage.getItem('cart'));
+    let newCart = cart.map(item=> {
+        if(item.id== id){
+            item["quantity"] = quantityCount.value;
+        }
+        return item;
+    })
+    localStorage.setItem('cart',JSON.stringify(newCart));
+   
+}
+
+
 ////cart functionality
 
 let singleProduct = document.querySelector('.products');
 let cartCounter = document.querySelector('.cart-counter');
-let shoppingButtons = document.querySelectorAll('.shopping-button');
 
-shoppingButtons.forEach(item=>{
-    item.addEventListener('click',(e)=>{
-    
+function addToCart(id){
+
     let cartItems = [];
     cartCounter.style.display = "block";
+    document.getElementById(`shopping-${id}`).style.display="none";
 
-    let productID = e.target.offsetParent.id;
-    document.getElementById(`shopping-${productID}`).style.display="none";
-    document.getElementById(`quantity-${productID}`).style.display = "flex"; 
-    const filteredProductsBasedOnId = PRODUCTS.filter(item => item.id == productID);
+    document.getElementById(`quantity-counter-box-${id}`).style.display = "flex";
+    
+    const filteredProductsBasedOnId = PRODUCTS.filter(item => item.id == id);
     filteredProductsBasedOnId[0]["quantity"] = 1;
+    
     if(localStorage.getItem('cart')){
        cartItems = JSON.parse(localStorage.getItem('cart')); 
     }
-
-
     cartItems.push(filteredProductsBasedOnId[0]);
-    let cartItemsCount = cartItems.length;
-
+    let cartItemsCount = cartItems.length;  
     cartCounter.innerHTML = cartItemsCount;
-    window.localStorage.setItem('cart',JSON.stringify(cartItems));
-    console.log(localStorage.getItem('cart'));
-})
-})
 
+    localStorage.setItem('cart',JSON.stringify(cartItems));
+}
 
-///quantity-box;
-
-let quantityBoxes = document.querySelectorAll('.quantity-box input[type=number]');
-
-quantityBoxes.forEach(item=>{
-    item.addEventListener('change',(e)=>{
-        // console.log(e.target.value);
-        let productID = e.target.offsetParent.id;
-        console.log(productID,e.target.value);
-
-        let cart = JSON.parse(localStorage.getItem('cart'));
-        let newCart = cart.map(item=> {
-            if(item.id== productID){
-                item["quantity"] = e.target.value;
-            }
-            return item;
-        })
-
-        localStorage.setItem('cart',JSON.stringify(newCart));
-       
-        console.log(localStorage.getItem('cart'));
-    })
-})
 
 
 
