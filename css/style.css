@@ -32,7 +32,7 @@ nav{
 }
 
 .add-to-cart-icon{
-    font-size: 3rem;
+    font-size: 2rem;
     cursor:pointer;
     padding: 0.5rem 0.5rem;
     text-decoration: none;
@@ -67,20 +67,32 @@ nav{
     transition: 0.5s ease-in-out;
 }
 
-.shopping-icon{
+.shopping-button{
     position:relative;
-    top: 40%;
-    left: 35%;
-    color: gray;
-    font-size: 4rem;
+    top: -50%;
+    left: 20%;
+    background-color:palevioletred;
+    padding: 1rem 1rem;
     visibility: hidden;
+    color:white;
+    border:none;
+    outline:none;
+
+}
+
+
+.quantity-box{
+    display:none;
+    justify-content: center;
+    align-items: center;
+    gap: 1em;
 }
 
 .single-product:hover{
     transform: scale(1.1);
 }
 
-.single-product:hover .shopping-icon{
+.single-product:hover .shopping-button{
    display:inline-block;
    visibility: visible;
    

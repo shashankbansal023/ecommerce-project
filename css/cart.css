@@ -40,10 +40,10 @@
 }
 
 .checkout-total>table{
-    margin:1rem 1rem;
-    padding: 1rem 1rem;
-    width:100%;
+    /* margin:1rem 1rem; */
+    padding: 2rem 1rem;
     font-size: 1.5rem;
+    font-weight: 600;
 }
 
 .single-product{
@@ -123,4 +123,43 @@
     text-align:right;
     font-size:1.5rem;
     margin: 0 1rem;
+    font-weight: 600;
+}
+
+#logo-img{
+    width: 4rem;
+}
+
+.search-box{
+    border: 1px solid black;
+    padding : 0.5rem 1rem;
+}
+
+.search-box input[type=text]{
+    border:none;
+    outline:none;
+}
+
+.price-heading{
+    text-align:center;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.checkout-footer{
+    display:flex;
+    justify-content: center;
+}
+
+.checkout-footer button{
+    font-size: 2rem;
+    text-transform: uppercase;
+    text-align: center;
+    background-color: rgb(197, 30, 57);
+    color:white;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    box-shadow: 0 0 10px black;
 }
