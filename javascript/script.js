@@ -555,37 +555,69 @@ const PRODUCTS = [
 ]
 
 const productsRef = document.querySelector(".products");
+let cartCounter = document.querySelector('.cart-counter');
+
+cartCounter.innerHTML = (localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')).length :0);
 
 function render(allProducts){
     let products = "";
+    let cartItems = JSON.parse(localStorage.getItem('cart'));
     
     if(!allProducts.length){
+
         allProducts = [...PRODUCTS];
+        products = (`
+            
+        `)
     }
 
     allProducts.forEach(item=>{
         const {image,category,price,brand,id} = item;
         const {discountedPrice} = price;
+
+        const isProductPresentInCart = checkIfProductIsInCart(id);
+        const itemQuantity = isProductPresentInCart? cartItems.find(item=>item.id==id).quantity : 0;
+
+        const cartString = !isProductPresentInCart ? `
+        <div class = "row p-2 d-flex justify-content-center" id="shopping-box-${id}" >
+        <button class="col-md-8 btn btn-primary shopping-button cursor-pointer" onclick="addToCart(${id})" id="shopping-${id}">
+            Add to <i class="fas fa-cart-arrow-down"></i>
+        </button>  
+    </div>
+        `:` <div class="quantity-counter-box d-flex justify-content-center m-2" id="quantity-counter-box-${id}">
+        <div class="input-group quantity-counter mb-3 row d-flex" style="width:60%">
+                <button onclick="decrementQuantity(${id})" class="col btn btn-secondary" type="button" id="button-addon1-${id}">-</button>
+                    <input  id="quantity-count-${id}" type="text"  class="col form-control" value=${itemQuantity} placeholder="">
+                <button onclick="incrementQuantity(${id})" class="col btn btn-info" type="button" id="button-addon2-${id}">+</button>
+        </div>
+    </div>  
+        `
+        
+
         products+=(`
-        <div class='single-product' id=${id}>
-            <i class="fas fa-shopping-cart cursor-pointer shopping-icon"></i>    
-            <div class="product-img">
-                <img src=${image}>
-            </div>
-            <div>
-                <p class="brand-name">${brand}</p>
-                <p class="category">${category}</h1>
-            </div>
-            <div class="price-details">
-                <span>${discountedPrice}</span>
-                <span class="mrp-price">${price.mrp}</span>
-                <span>${price.discount}</span>
+        <div class='single-product row col-md-3 card p-0 m-3'  id=${id}>  
+            <img class="card-img-top p-0"  src=${image} >
+            <div class="card-body col-md-12">
+                <div>
+                    <p class="brand-name">${brand}</p>
+                    <p class="category">${category}</h1>
+                </div>
+                <div class="price-details">
+                    <span>Rs.${discountedPrice}</span>
+                    <span class="mrp-price">Rs.${price.mrp}</span>
+                    <span>${price.discount}</span>
+                </div>
+                ${cartString}   
             </div>
         </div>
         `)
+
     })
+
     productsRef.innerHTML = products; 
 }
+
+
 
 function renderFilteredProducts(filterCategories){
 
@@ -652,10 +684,23 @@ function renderBasedOnSearch(){
     const searchBox = document.querySelector('.search-box input[type=text]');
 
     searchBox.addEventListener('keyup',(e)=>{
-        searchProducts(e.target.value);
+        searchDebounce(e.target.value);
     })
 
 }
+
+const searchDebounce = debounce(searchProducts,300);
+
+function debounce(fn,delay){
+    let timeout = 0;
+    return function(...args){
+        if(timeout){
+            clearTimeout(timeout);
+        }
+        timeout = setTimeout(()=> fn.call(this,...args),delay)
+    }
+}
+
 
 function searchProducts(searchValue){
 
@@ -665,6 +710,10 @@ function searchProducts(searchValue){
          return brand.toLowerCase().includes(searchValue) || category.toLowerCase().includes(searchValue);
     })
 
+    if(!products.length){
+        renderNoProductFound();
+        return;
+    }
     render(products);
 }
 
@@ -674,54 +723,126 @@ priceFiltering();
 renderBasedOnSearch();
 
 
+function renderNoProductFound(){
+
+    productsRef.innerHTML = `<div class="no-product-found">
+    <img src="https://static-assets-web.flixcart.com/www/linchpin/fk-cp-zion/img/error-no-search-results_2353c5.png">
+    <div class="no-product-found-text">
+        <p>Sorry, no results found! </p>
+        <p>Please check the spelling or try searching for something else</p>
+    </div>
+</div>`
+}
+
+
+function incrementQuantity(id){
+
+    let quantityCount = document.getElementById(`quantity-count-${id}`); 
+
+    if(quantityCount.value < 10){
+        quantityCount.value++;
+    }
+
+    let cart = JSON.parse(localStorage.getItem('cart'));
+    let newCart = cart.map(item=> {
+        if(item.id== id){
+            item["quantity"] = quantityCount.value;
+        }
+        return item;
+    })
+    localStorage.setItem('cart',JSON.stringify(newCart));
+
+}
+
+function decrementQuantity(id){
+
+    let quantityCount = document.getElementById(`quantity-count-${id}`);
+ 
+    if(quantityCount.value > 1){
+        quantityCount.value--;
+    }
+
+    let cart = JSON.parse(localStorage.getItem('cart'));
+    let newCart = cart.map(item=> {
+        if(item.id== id){
+            item["quantity"] = quantityCount.value;
+        }
+        return item;
+    })
+    localStorage.setItem('cart',JSON.stringify(newCart));
+   
+}
+
+
 ////cart functionality
 
 let singleProduct = document.querySelector('.products');
-let cartCounter = document.querySelector('.cart-counter');
 
-singleProduct.addEventListener('click',(e)=>{
-    cartCounter.style.display = "block";
-    cartCounter.innerHTML = window.localStorage.length;
-    let productID = e.target.offsetParent.id;
-    const filteredProductsBasedOnId = PRODUCTS.filter(item => item.id == productID);
-    if(!window.localStorage.getItem(`${productID}`)){
-        window.localStorage.setItem(`${productID}`,JSON.stringify(filteredProductsBasedOnId[0]))
+
+function addToCart(id){
+
+    let cartItems = [];
+
+    const product = PRODUCTS.find(item => item.id == id);
+    product["quantity"] = 1;
+    
+    if(localStorage.getItem('cart')){
+       cartItems = JSON.parse(localStorage.getItem('cart')); 
     }
-},true)
+
+    cartItems.push(product);
+    cartNotificationUpdate(cartItems.length);
+    localStorage.setItem('cart',JSON.stringify(cartItems));
+
+    // render(PRODUCTS);
+    renderSingleProduct(id);
+}
+
+function cartNotificationUpdate(cartQuantity){
+    cartCounter.innerHTML = cartQuantity;
+}
 
 
+function checkIfProductIsInCart(id){
+    
+    let product;
+    if(localStorage.getItem('cart')){
+        let cartItems = JSON.parse(localStorage.getItem('cart'));
+        product = cartItems.find(item=> item.id==id);
+    }
+    return product ? true : false;
+}
 
+function renderSingleProduct(productID){
 
+    let product = PRODUCTS.find(item=>item.id==productID);
+    const {image,category,price,brand,id} = product;
+    const {discountedPrice} = price;
 
+    let singleProduct = document.getElementById(id);
+    let productHTML = (`
+    <img class="card-img-top p-0"  src=${image} >
+    <div class="card-body col-md-12">
+        <div>
+            <p class="brand-name">${brand}</p>
+            <p class="category">${category}</h1>
+        </div>
+        <div class="price-details">
+            <span>Rs.${discountedPrice}</span>
+            <span class="mrp-price">Rs.${price.mrp}</span>
+            <span>${price.discount}</span>
+        </div>
+        <div class="quantity-counter-box d-flex justify-content-center m-2" id="quantity-counter-box-${id}">
+        <div class="input-group quantity-counter mb-3 row d-flex" style="width:60%">
+                <button onclick="decrementQuantity(${id})" class="col btn btn-secondary" type="button" id="button-addon1-${id}">-</button>
+                    <input  id="quantity-count-${id}" type="text"  class="col form-control" value="1" placeholder="">
+                <button onclick="incrementQuantity(${id})" class="col btn btn-info" type="button" id="button-addon2-${id}">+</button>
+        </div>
+    </div>   
+    </div>       
+    `)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    singleProduct.innerHTML = productHTML;
+}
 
 

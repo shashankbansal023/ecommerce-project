@@ -1,0 +1,385 @@
+body{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.navbar{
+    background-color: white;
+    box-shadow: 0 0 5px gray;
+}
+
+.container-fluid{
+    display: flex;
+    align-items: center;
+}
+
+#logo-img{
+    width:100px;
+}
+
+.nav-link{
+    text-transform: uppercase;
+    font-weight:bold;
+    font-size: 15px;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+.nav-item{
+    height:100%;
+}
+
+.nav-item:hover{
+    border-bottom: 2px solid black;
+}
+
+.search-box{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid black;
+    font-size: 1rem;
+}
+
+.search-box input[type=text]{
+    flex: 1;
+    width: 20vw;
+  border:none;
+  outline:none;
+  
+}
+
+.fa-search{
+    font-size: 20px;
+    margin: 1rem 1rem;
+    cursor:pointer;
+}
+
+.add-to-cart-icon{
+    font-size: 1.5rem;
+    cursor:pointer;
+    padding: 0.5rem 0.5rem;
+    text-decoration: none;
+    color:rgb(7, 2, 12);
+}
+
+.cart-link{
+    text-decoration: none;
+}
+
+.profile-icon{
+    color:black;
+    font-size: 1.5rem;
+    padding: 1rem 1rem;
+}
+
+.pagination{
+    overflow:hidden;
+    margin: 2rem 0rem;
+}
+
+.pagination img{
+    width: 100vw;
+}
+
+.scroll-dots{
+    display:flex;
+    justify-content: center;
+    gap:10px;
+}
+
+.fa-circle{
+    font-size: 8px;
+    color:gray;
+    cursor:pointer;
+}
+
+.deals-of-the-day{
+    display:flex;
+    flex-direction: column;
+}
+
+.deals-image-component{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap:wrap;
+    margin: 1rem 1rem;
+}
+
+.deals-image{
+    width:15vw;
+}
+
+.deals-title{
+    font-size: 2rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin: 4rem 2rem;
+}
+
+.biggest-deals-on-top-brands{
+    display:flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.biggest-deal-title{
+    font-size:2rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin: 4rem 2rem;
+}
+
+.biggest-deals-images{
+    display:flex;
+    justify-content: center;
+    align-items:center;
+    flex-wrap:wrap;
+    margin: 0rem 3rem;
+}
+
+.biggest-deals-image{
+    width : 17vw;
+}
+
+/* categories to bag*/
+
+.categories-to-bag{
+    display:flex;
+    flex-direction:column;
+    justify-content: center;
+}
+
+.categories-to-bag-title{
+    font-size:2rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin: 4rem 2rem;
+}
+
+.categories-images{
+    display:flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    object-fit:contain;
+}
+
+.category-image{
+    width: 13vw;
+    margin: 0 1rem;
+}
+
+/* explore images*/
+.explore-top-brands{
+    display:flex;
+    flex-direction: column;
+}
+
+.explore-title{
+    font-size:2rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin: 4rem 2rem;
+}
+
+.explore-images-component{
+    display:flex;
+    flex-wrap:wrap;
+    align-items: center;
+    justify-content: center;
+    margin: 0 4rem;
+}
+
+.explore-img>a>img{
+    width: 15vw;
+    margin: 0 1rem;
+}
+
+.myntra-img{
+    width: 13vw;
+    margin: 0 1rem;
+}
+
+.myntra-luxe-heading{
+    font-size:2rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin: 4rem 2rem;
+}
+
+.myntra-luxe-images{
+    display:flex;
+    justify-content:center;
+    flex-wrap: wrap;
+}
+
+.western-wear-heading{
+    font-size:2rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin: 4rem 2rem;
+}
+
+.western-wear-images{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content: center;
+    gap:1rem;
+}
+
+.western-img{
+    width: 15vw;
+}
+
+
+.indian-wear-trending{
+    display:flex;
+    flex-direction: column;
+}
+
+.indian-wear-heading{
+    font-size:2rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin: 4rem 2rem;
+}
+
+.indian-wear-images{
+    display:flex;
+    justify-content: center;
+    flex-wrap:wrap;
+    gap:2rem;
+}
+
+.indian-img{
+    width: 16vw;
+}
+
+/*Sports Wear*/
+.sports-wear-trending{
+    display:flex;
+    flex-direction: column;
+    margin: 2rem 2rem;
+}
+
+.sports-wear-heading{
+    font-size:2rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin: 2rem 1rem;
+}
+
+.sports-wear-images{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    align-items: center;
+    gap:1rem;
+}
+
+.sports-img{
+    width: 17vw;
+}
+
+/*Footwear*/
+
+.footwear-trending{
+    display:flex;
+    flex-direction: column;
+    margin: 2rem 2rem;
+}
+
+.footwear-heading{
+    font-size:2rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin: 2rem 1rem;
+}
+
+.footwear-images{
+    display:flex;
+    justify-content: center;
+    align-items:center;
+    margin: 1rem 1rem;
+    gap:1rem;
+    flex-wrap:wrap;
+}
+
+.footwear-img{
+    width: 16vw;
+}
+
+/*Accessories*/
+
+.trending-accessories{
+    display:flex;
+    flex-direction: column;
+    margin: 2rem 2rem;
+}
+
+.accessories-heading{
+    font-size:2rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin: 2rem 1rem;
+}
+
+.accessories-images{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:1rem;
+    flex-wrap:wrap;
+}
+
+.accessories-img{
+    width: 16vw;
+}
+
+/*footer*/
+
+.footer-container{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.footer-head{
+    display:flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 1rem 1rem;
+}
+
+.footer-head h2{
+    font-size: 1rem;
+    text-transform: uppercase;
+}
+
+.footer-head a{
+    text-decoration: none;
+    color:black;
+}
+
+.app-store-links{
+    margin-bottom: 3rem;
+}
+
+.app-store-links>a>img{
+    width:10vw;
+}
+
+.social-links>a>img{
+    width:1.5rem;
+}
+
+.guarantee-and-returns{
+    font-size:1rem;
+    font-weight: 500;
+}
+
+.social-links{
+    display: flex;
+    gap: 2rem;
+}
