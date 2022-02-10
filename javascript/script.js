@@ -554,22 +554,46 @@ const PRODUCTS = [
     } 
 ]
 
-
 const productsRef = document.querySelector(".products");
+let cartCounter = document.querySelector('.cart-counter');
+
+cartCounter.innerHTML = (localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')).length :0);
 
 function render(allProducts){
     let products = "";
-    // let cartItems = JSON.parse(localStorage.getItem('cart'));
+    let cartItems = JSON.parse(localStorage.getItem('cart'));
     
     if(!allProducts.length){
+
         allProducts = [...PRODUCTS];
+        products = (`
+            
+        `)
     }
 
     allProducts.forEach(item=>{
-        
         const {image,category,price,brand,id} = item;
         const {discountedPrice} = price;
+
+        const isProductPresentInCart = checkIfProductIsInCart(id);
+        const itemQuantity = isProductPresentInCart? cartItems.find(item=>item.id==id).quantity : 0;
+
+        const cartString = !isProductPresentInCart ? `
+        <div class = "row p-2 d-flex justify-content-center" id="shopping-box-${id}" >
+        <button class="col-md-8 btn btn-primary shopping-button cursor-pointer" onclick="addToCart(${id})" id="shopping-${id}">
+            Add to <i class="fas fa-cart-arrow-down"></i>
+        </button>  
+    </div>
+        `:` <div class="quantity-counter-box d-flex justify-content-center m-2" id="quantity-counter-box-${id}">
+        <div class="input-group quantity-counter mb-3 row d-flex" style="width:60%">
+                <button onclick="decrementQuantity(${id})" class="col btn btn-secondary" type="button" id="button-addon1-${id}">-</button>
+                    <input  id="quantity-count-${id}" type="text"  class="col form-control" value=${itemQuantity} placeholder="">
+                <button onclick="incrementQuantity(${id})" class="col btn btn-info" type="button" id="button-addon2-${id}">+</button>
+        </div>
+    </div>  
+        `
         
+
         products+=(`
         <div class='single-product row col-md-3 card p-0 m-3'  id=${id}>  
             <img class="card-img-top p-0"  src=${image} >
@@ -583,32 +607,16 @@ function render(allProducts){
                     <span class="mrp-price">Rs.${price.mrp}</span>
                     <span>${price.discount}</span>
                 </div>
-           
-                <div class = "row p-2 d-flex justify-content-center" >
-                    <button class="col-md-8 btn btn-primary shopping-button cursor-pointer" onclick="addToCart(${id})" id="shopping-${id}">
-                        Add to <i class="fas fa-cart-arrow-down"></i>
-                    </button>  
-                </div>
-
-                <div class="quantity-counter-box justify-content-center" id="quantity-counter-box-${id}">
-                    <div class="input-group quantity-counter mb-3 row d-flex" style="width:60%">
-                            <button onclick="decrementQuantity(${id})" class="col btn btn-secondary" type="button" id="button-addon1-${id}">-</button>
-                                <input  id="quantity-count-${id}" type="number"  class="col" value="1" placeholder="">
-                            <button onclick="incrementQuantity(${id})" class="col btn btn-info" type="button" id="button-addon2-${id}">+</button>
-                    </div>
-                    </div>  
+                ${cartString}   
             </div>
         </div>
         `)
+
     })
 
-    // if(cartItems.length!==0){
-        // document.querySelector('.cart-counter').innerHTML = cartItems.length;
-    // }
     productsRef.innerHTML = products; 
 }
 
-localStorage.clear();
 
 
 function renderFilteredProducts(filterCategories){
@@ -702,6 +710,10 @@ function searchProducts(searchValue){
          return brand.toLowerCase().includes(searchValue) || category.toLowerCase().includes(searchValue);
     })
 
+    if(!products.length){
+        renderNoProductFound();
+        return;
+    }
     render(products);
 }
 
@@ -710,6 +722,17 @@ brandFiltering();
 priceFiltering();
 renderBasedOnSearch();
 
+
+function renderNoProductFound(){
+
+    productsRef.innerHTML = `<div class="no-product-found">
+    <img src="https://static-assets-web.flixcart.com/www/linchpin/fk-cp-zion/img/error-no-search-results_2353c5.png">
+    <div class="no-product-found-text">
+        <p>Sorry, no results found! </p>
+        <p>Please check the spelling or try searching for something else</p>
+    </div>
+</div>`
+}
 
 
 function incrementQuantity(id){
@@ -754,31 +777,72 @@ function decrementQuantity(id){
 ////cart functionality
 
 let singleProduct = document.querySelector('.products');
-let cartCounter = document.querySelector('.cart-counter');
+
 
 function addToCart(id){
 
     let cartItems = [];
-    cartCounter.style.display = "block";
-    document.getElementById(`shopping-${id}`).style.display="none";
 
-    document.getElementById(`quantity-counter-box-${id}`).style.display = "flex";
-    
-    const filteredProductsBasedOnId = PRODUCTS.filter(item => item.id == id);
-    filteredProductsBasedOnId[0]["quantity"] = 1;
+    const product = PRODUCTS.find(item => item.id == id);
+    product["quantity"] = 1;
     
     if(localStorage.getItem('cart')){
        cartItems = JSON.parse(localStorage.getItem('cart')); 
     }
-    cartItems.push(filteredProductsBasedOnId[0]);
-    let cartItemsCount = cartItems.length;  
-    cartCounter.innerHTML = cartItemsCount;
 
+    cartItems.push(product);
+    cartNotificationUpdate(cartItems.length);
     localStorage.setItem('cart',JSON.stringify(cartItems));
+
+    // render(PRODUCTS);
+    renderSingleProduct(id);
+}
+
+function cartNotificationUpdate(cartQuantity){
+    cartCounter.innerHTML = cartQuantity;
 }
 
 
+function checkIfProductIsInCart(id){
+    
+    let product;
+    if(localStorage.getItem('cart')){
+        let cartItems = JSON.parse(localStorage.getItem('cart'));
+        product = cartItems.find(item=> item.id==id);
+    }
+    return product ? true : false;
+}
 
+function renderSingleProduct(productID){
 
+    let product = PRODUCTS.find(item=>item.id==productID);
+    const {image,category,price,brand,id} = product;
+    const {discountedPrice} = price;
+
+    let singleProduct = document.getElementById(id);
+    let productHTML = (`
+    <img class="card-img-top p-0"  src=${image} >
+    <div class="card-body col-md-12">
+        <div>
+            <p class="brand-name">${brand}</p>
+            <p class="category">${category}</h1>
+        </div>
+        <div class="price-details">
+            <span>Rs.${discountedPrice}</span>
+            <span class="mrp-price">Rs.${price.mrp}</span>
+            <span>${price.discount}</span>
+        </div>
+        <div class="quantity-counter-box d-flex justify-content-center m-2" id="quantity-counter-box-${id}">
+        <div class="input-group quantity-counter mb-3 row d-flex" style="width:60%">
+                <button onclick="decrementQuantity(${id})" class="col btn btn-secondary" type="button" id="button-addon1-${id}">-</button>
+                    <input  id="quantity-count-${id}" type="text"  class="col form-control" value="1" placeholder="">
+                <button onclick="incrementQuantity(${id})" class="col btn btn-info" type="button" id="button-addon2-${id}">+</button>
+        </div>
+    </div>   
+    </div>       
+    `)
+
+    singleProduct.innerHTML = productHTML;
+}
 
 
